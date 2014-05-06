@@ -15,7 +15,7 @@ from treq.test.util import DEBUG, is_pypy, has_ssl
 
 import treq
 
-HTTPBIN_URL = "http://httpbin.org"
+HTTPBIN_URL = "http://127.0.0.1:5000"
 HTTPSBIN_URL = "https://httpbin.org"
 
 
@@ -43,6 +43,7 @@ def print_response(response):
 
 def with_baseurl(method):
     def _request(self, url, *args, **kwargs):
+        import pdb; pdb.set_trace()
         return method(self.baseurl + url, *args, pool=self.pool, **kwargs)
 
     return _request
@@ -239,6 +240,12 @@ class TreqIntegrationTests(TestCase):
                                  CancelledError,
                                  ResponseFailed)
 
+    @inlineCallbacks
+    def test_no_contentlen(self):
+        """
+        Verify a response with no content-length works
+        """
+        yield self.get('/nocontentlen')
 
 class HTTPSTreqIntegrationTests(TreqIntegrationTests):
     baseurl = HTTPSBIN_URL
